@@ -47,60 +47,7 @@ public class Main extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-                String green = "0x63d668ff";
-                String orange = "0xff974dff";
-                String red = "0xf23c32ff";
-                String darkRed = "0x811f1fff";
-
-                int greenCount = 0, orangeCount = 0, redCount = 0, darkRedCount = 0, totalTrafficPixels = 0;
-
-                SnapshotParameters snapshotParameters = new SnapshotParameters();
-                snapshotParameters.setFill(Color.TRANSPARENT);
-
-                Image img = myWebView.snapshot(null, null);
-
-                System.out.printf("img.width: %s    height: %s%n", img.getWidth(), img.getHeight());
-
-                PixelReader pr = img.getPixelReader();
-                long count = 0;
-
-
-                for (int i = 0; i < img.getHeight(); i++) {
-                    for (int j = 0; j < img.getWidth(); j++) {
-                       // System.out.println(pr.getColor(j, i).toString());
-                        count++;
-                        if (pr.getColor(j, i).toString().equals(green)) {
-                            greenCount++;
-                            totalTrafficPixels++;
-                        } else if (pr.getColor(j, i).toString().equals(orange)) {
-                            orangeCount++;
-                            totalTrafficPixels++;
-                        } else if (pr.getColor(j, i).toString().equals(red)) {
-                            redCount++;
-                            totalTrafficPixels++;
-                        } else if (pr.getColor(j, i).toString().equals(darkRed)) {
-                            darkRedCount++;
-                            totalTrafficPixels++;
-                        }
-                    }
-                }
-
-                System.out.println(greenCount + " " + orangeCount + " " + redCount + " " + darkRedCount + " " + count + " " + totalTrafficPixels);
-
-                double percentageGreen = 0, percentageOrange = 0, percentageRed = 0, percentageDarkRed = 0;
-                percentageGreen = (double)(greenCount * 100) / totalTrafficPixels;
-                percentageOrange = (double)(orangeCount * 100) / totalTrafficPixels;
-                percentageRed = (double)(redCount * 100) / totalTrafficPixels;
-                percentageDarkRed = (double)(darkRedCount * 100) / totalTrafficPixels;
-
-                System.out.println(percentageGreen + " " + percentageOrange + " " + percentageRed + " " + percentageDarkRed);
-
-                double index = (percentageOrange + (2 * percentageRed) + (3 * percentageDarkRed));
-
-                System.out.printf("%.2f", index);
-
-
-
+                analyzeMap(myWebView);
             }
         });
 
@@ -111,13 +58,68 @@ public class Main extends Application {
         VBox root = new VBox();
         root.getChildren().addAll(myWebView, btn, btn2);
 
-        Scene scene = new Scene(root, 800, 500);
+        Scene scene = new Scene(root, 500, 550);
         stage.setScene(scene);
 
         stage.show();
     }
 
-    public void loadMap(WebEngine engine){
+    private void analyzeMap(WebView myWebView ){
+        String green = "0x63d668ff";
+        String orange = "0xff974dff";
+        String red = "0xf23c32ff";
+        String darkRed = "0x811f1fff";
+
+        int greenCount = 0, orangeCount = 0, redCount = 0, darkRedCount = 0, totalTrafficPixels = 0;
+
+        SnapshotParameters snapshotParameters = new SnapshotParameters();
+        snapshotParameters.setFill(Color.TRANSPARENT);
+
+        Image img = myWebView.snapshot(null, null);
+
+        System.out.printf("img.width: %s    height: %s%n", img.getWidth(), img.getHeight());
+
+        PixelReader pr = img.getPixelReader();
+        long count = 0;
+
+
+        for (int i = 0; i < img.getHeight(); i++) {
+            for (int j = 0; j < img.getWidth(); j++) {
+                // System.out.println(pr.getColor(j, i).toString());
+                count++;
+                if (pr.getColor(j, i).toString().equals(green)) {
+                    greenCount++;
+                    totalTrafficPixels++;
+                } else if (pr.getColor(j, i).toString().equals(orange)) {
+                    orangeCount++;
+                    totalTrafficPixels++;
+                } else if (pr.getColor(j, i).toString().equals(red)) {
+                    redCount++;
+                    totalTrafficPixels++;
+                } else if (pr.getColor(j, i).toString().equals(darkRed)) {
+                    darkRedCount++;
+                    totalTrafficPixels++;
+                }
+            }
+        }
+
+        System.out.println(greenCount + " " + orangeCount + " " + redCount + " " + darkRedCount + " " + count + " " + totalTrafficPixels);
+
+        double percentageGreen = 0, percentageOrange = 0, percentageRed = 0, percentageDarkRed = 0;
+        percentageGreen = (double)(greenCount * 100) / totalTrafficPixels;
+        percentageOrange = (double)(orangeCount * 100) / totalTrafficPixels;
+        percentageRed = (double)(redCount * 100) / totalTrafficPixels;
+        percentageDarkRed = (double)(darkRedCount * 100) / totalTrafficPixels;
+
+        System.out.println(percentageGreen + " " + percentageOrange + " " + percentageRed + " " + percentageDarkRed);
+
+        double index = (percentageOrange + (2 * percentageRed) + (3 * percentageDarkRed));
+
+        System.out.printf("%.2f", index);
+        System.out.println();
+    }
+
+    private void loadMap(WebEngine engine){
         engine.loadContent("<!DOCTYPE html>\n" +
                 "<html>\n" +
                 "  <head>\n" +
@@ -144,7 +146,7 @@ public class Main extends Application {
                 "      function initMap() {\n" +
                 "        var map = new google.maps.Map(document.getElementById('map'), {\n" +
                 "          zoom: 19,\n" +
-                "          center: {lat: 45.756300, lng: 21.239730}\n" +
+                "          center: {lat: 45.753837, lng: 21.224253}\n" +
                 "        });\n" +
                 "\n" +
                 "        var trafficLayer = new google.maps.TrafficLayer();\n" +
