@@ -15,9 +15,22 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 
+import javax.swing.plaf.synth.SynthEditorPaneUI;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.TimeZone;
+
 
 public class Main extends Application {
     public static WebView myWebView = new WebView();
+    public static String lat = "45.756280";
+    public static String lon = "21.239715";
+    public static boolean indoors = false;
+
+
     public static void main(String[] args) {
         Application.launch(args);
     }
@@ -50,13 +63,14 @@ public class Main extends Application {
 
                                 Platform.runLater(new Runnable() {
                                     @Override public void run() {
-                                            analyzeMap(myWebView);
+                                        loadMap(engine);
+                                        analyzeMap(myWebView);
                                     }
                                 });
 
                             }
                         },
-                        0, 5000
+                        0, 60000
                 );
             }
         });
@@ -73,6 +87,34 @@ public class Main extends Application {
 
         stage.show();
     }
+
+    public void writeToCSV(String traffic) {
+        try {
+            FileWriter pw = new FileWriter("E:\\data.csv", true);
+
+            Calendar cal = java.util.Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss Z");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String timeStamp = sdf.format(cal.getTime());
+
+            pw.append(timeStamp);
+            pw.append(",");
+            pw.append(lat);
+            pw.append(",");
+            pw.append(lon);
+            pw.append(",");
+            pw.append(traffic);
+            pw.append(",");
+            pw.append(Boolean.toString(indoors));
+            pw.append(",");
+            pw.append("\n");
+            pw.flush();
+            pw.close();
+        } catch (Exception e){
+            System.out.println("exception " + e.getLocalizedMessage());
+        }
+    }
+
 
     private void analyzeMap(WebView myWebView ){
         String green = "0x63d668ff";
@@ -124,6 +166,7 @@ public class Main extends Application {
 
         System.out.printf("%.2f", index);
         System.out.println();
+        writeToCSV(String.format("%.2f", index));
     }
 
 
@@ -155,7 +198,7 @@ public class Main extends Application {
                 "      function initMap() {\n" +
                 "        var map = new google.maps.Map(document.getElementById('map'), {\n" +
                 "          zoom: 19,\n" +
-                "          center: {lat: 45.753837, lng: 21.224253}\n" +
+                "          center: {lat: " + lat + ", lng: +" + lon + "}\n" +
                 "        });\n" +
                 "\n" +
                 "        var trafficLayer = new google.maps.TrafficLayer();\n" +
