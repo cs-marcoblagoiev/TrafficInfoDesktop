@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -14,20 +15,15 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class Main extends Application {
+    public static WebView myWebView = new WebView();
     public static void main(String[] args) {
         Application.launch(args);
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-        WebView myWebView = new WebView();
         WebEngine engine = myWebView.getEngine();
 
         loadMap(engine);
@@ -47,7 +43,21 @@ public class Main extends Application {
 
             @Override
             public void handle(ActionEvent event) {
-                analyzeMap(myWebView);
+                new java.util.Timer().schedule(
+                        new java.util.TimerTask() {
+                            @Override
+                            public void run() {
+
+                                Platform.runLater(new Runnable() {
+                                    @Override public void run() {
+                                            analyzeMap(myWebView);
+                                    }
+                                });
+
+                            }
+                        },
+                        0, 5000
+                );
             }
         });
 
@@ -71,9 +81,6 @@ public class Main extends Application {
         String darkRed = "0x811f1fff";
 
         int greenCount = 0, orangeCount = 0, redCount = 0, darkRedCount = 0, totalTrafficPixels = 0;
-
-        SnapshotParameters snapshotParameters = new SnapshotParameters();
-        snapshotParameters.setFill(Color.TRANSPARENT);
 
         Image img = myWebView.snapshot(null, null);
 
@@ -119,6 +126,8 @@ public class Main extends Application {
         System.out.println();
     }
 
+
+
     private void loadMap(WebEngine engine){
         engine.loadContent("<!DOCTYPE html>\n" +
                 "<html>\n" +
@@ -159,4 +168,6 @@ public class Main extends Application {
                 "  </body>\n" +
                 "</html>");
     }
+
+
 }
